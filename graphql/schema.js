@@ -21,7 +21,8 @@ module.exports = new GraphQLSchema({
         args: {
           id: { type: GraphQLInt }
         },
-        resolve: (root, args) => fetch(`https://www.goodreads.com/author/show.xml?id=${args.id}&format=xml&key=${key}`)
+        resolve: (root, args) =>
+          fetch(`https://www.goodreads.com/author/show.xml?id=${args.id}&format=xml&key=${key}`)
           .then(response => response.text())
           .then(parseXML)
       }

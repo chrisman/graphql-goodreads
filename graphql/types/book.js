@@ -9,11 +9,11 @@ module.exports = new GraphQLObjectType({
   fields: () => ({
     title: {
       type: GraphQLString,
-      resolve: books => books.title[0],
+      resolve: xml => xml.GoodreadsResponse.book[0].title[0],
     },
     isbn: {
       type: GraphQLString,
-      resolve: books => books.isbn[0],
+      resolve: xml => xml.GoodreadsResponse.book[0].isbn[0],
     },
   }),
 });

@@ -1,3 +1,4 @@
+const getTranslation = require('../../lib/translate');
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -9,7 +10,13 @@ module.exports = new GraphQLObjectType({
   fields: () => ({
     title: {
       type: GraphQLString,
-      resolve: xml => xml.GoodreadsResponse.book[0].title[0],
+      args: {
+        lang: { type: GraphQLString }
+      },
+      resolve: (xml, args) => {
+        const title = xml.GoodreadsResponse.book[0].title[0];
+        return args.lang ? getTranslation({ lang: args.lang, str: title }) : title;
+      }
     },
     isbn: {
       type: GraphQLString,

@@ -1,6 +1,3 @@
-require('dotenv').load();
-
-const fetchAuthor = require('../../lib/fetch').author;
 const DataLoader = require('dataloader');
 const {
   GraphQLObjectType,
@@ -8,33 +5,30 @@ const {
   GraphQLList,
 } = require('graphql');
 
-const key = process.env.APIKEY;
-
 const AuthorType = new GraphQLObjectType({
   name: 'Author',
   description: 'an author',
   fields: () => ({
     name: {
+      description: `the author's name`,
       type: GraphQLString,
-      resolve: parsedXML =>
-        parsedXML.GoodreadsResponse.author[0].name[0]
+      resolve: xml =>
+        xml.GoodreadsResponse.author[0].name[0]
     },
     books: {
+      description: `a list of books written by the author`,
       type: new GraphQLList(BookType),
-      resolve: parsedXML => {
-        const ids = parsedXML.GoodreadsResponse.author[0].books[0].book.map(book => book.id[0]._);
-        return BookLoader.loadMany(ids);
+      resolve: (xml, args, { loaders }) => {
+        const ids = xml.GoodreadsResponse.author[0].books[0].book.map(book => book.id[0]._);
+        return loaders.book.loadMany(ids);
       },
     },
   }),
 });
 
-const AuthorLoader = new DataLoader(keys => Promise.all(keys.map(fetchAuthor)));
 
 module.exports = {
-  AuthorType,
-  AuthorLoader,
+  AuthorType
 }
 
 const BookType = require('./book').BookType;
-const BookLoader = require('./book').BookLoader;

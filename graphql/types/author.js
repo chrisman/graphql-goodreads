@@ -9,7 +9,6 @@ const {
   GraphQLList,
 } = require('graphql');
 
-const BookType = require('./book');
 const key = process.env.APIKEY;
 
 module.exports = new GraphQLObjectType({
@@ -22,7 +21,7 @@ module.exports = new GraphQLObjectType({
         parsedXML.GoodreadsResponse.author[0].name[0]
     },
     books: {
-      type: GraphQLList(BookType),
+      type: new GraphQLList(BookType),
       resolve: parsedXML => {
         const ids = parsedXML.GoodreadsResponse.author[0].books[0].book.map(book => book.id[0]._);
         return Promise.all(ids.map(id => 
@@ -35,3 +34,4 @@ module.exports = new GraphQLObjectType({
   }),
 });
 
+const BookType = require('./book');

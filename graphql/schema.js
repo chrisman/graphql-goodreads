@@ -1,5 +1,6 @@
 const fetchAuthor = require('../lib/fetchAuthor');
-const AuthorType = require('./types/author');
+const AuthorType = require('./types/author').AuthorType;
+const AuthorLoader = require('./types/author').AuthorLoader;
 const {
   GraphQLInt,
   GraphQLObjectType,
@@ -16,7 +17,7 @@ module.exports = new GraphQLSchema({
         args: {
           id: { type: GraphQLInt }
         },
-        resolve: (root, args) => fetchAuthor(args.id)
+        resolve: (root, args) => AuthorLoader.load(args.id)
       }
     })
   })

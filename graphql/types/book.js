@@ -1,4 +1,6 @@
 require('dotenv').load();
+const fetchBook = require('../../lib/fetch').book;
+const DataLoader = require('dataloader');
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -6,9 +8,8 @@ const {
 } = require('graphql');
 
 const getTranslation = require('../../lib/translate');
-const fetchAuthor = require('../../lib/fetchAuthor');
 
-module.exports = new GraphQLObjectType({
+const BookType = new GraphQLObjectType({
   name: 'Book',
   description: 'a book',
   fields: () => ({
@@ -31,10 +32,18 @@ module.exports = new GraphQLObjectType({
       resolve: xml => {
         const authors = xml.GoodreadsResponse.book[0].authors[0].author;
         const ids = authors.map(author => author.id[0]);
-        return result = Promise.all(ids.map(fetchAuthor));
+        return AuthorLoader.loadMany(ids);
       }
     },
   }),
 });
 
-const AuthorType = require('./author');
+const BookLoader = new DataLoader(keys => Promise.all(keys.map(fetchBook)))
+
+module.exports = {
+  BookLoader,
+  BookType,
+}
+
+const AuthorType = require('./author').AuthorType;
+const AuthorLoader = require('./author').AuthorLoader;
